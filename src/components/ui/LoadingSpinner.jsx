@@ -4,25 +4,26 @@ import React from 'react';
 const LoadingSpinner = ({ 
   size = 'medium', 
   color = 'primary', 
-  text = 'Loading...' 
+  text = null,
+  className = ''
 }) => {
   const sizes = {
-    small: 'h-8 w-8',
-    medium: 'h-16 w-16',
-    large: 'h-24 w-24'
+    small: 'w-6 h-6 border-2',
+    medium: 'w-12 h-12 border-3',
+    large: 'w-16 h-16 border-4'
   };
 
   const colors = {
-    primary: 'border-primary-600',
-    success: 'border-eco-600',
-    gray: 'border-gray-600',
-    white: 'border-white'
+    primary: 'border-primary-200 border-t-primary-600',
+    success: 'border-eco-200 border-t-eco-600',
+    white: 'border-white/30 border-t-white',
+    gray: 'border-gray-200 border-t-gray-600',
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className={`animate-spin rounded-full ${sizes[size]} ${colors[color]} border-b-2`}></div>
-      {text && <p className="mt-2 text-gray-600 text-sm">{text}</p>}
+    <div className={`flex flex-col items-center justify-center ${className}`}>
+      <div className={`animate-spin rounded-full ${sizes[size]} ${colors[color]}`}></div>
+      {text && <p className="mt-3 text-sm text-gray-600">{text}</p>}
     </div>
   );
 };

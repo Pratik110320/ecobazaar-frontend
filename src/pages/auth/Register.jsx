@@ -1,10 +1,8 @@
-// src/pages/auth/Register.jsx - Updated with Tailwind CSS
+// src/pages/auth/Register.jsx - Redesigned
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/api';
-import Button from '../../components/ui/Button';
-import Card from '../../components/ui/Card';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +14,6 @@ const Register = () => {
   const [allowedRoles, setAllowedRoles] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -34,10 +31,7 @@ const Register = () => {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -48,8 +42,8 @@ const Register = () => {
     const result = await register(formData);
     
     if (result.success) {
-      navigate('/login', { 
-        state: { message: 'Registration successful! Please login.' } 
+      navigate('/login', {
+        state: { message: 'Registration successful! Please login.' }
       });
     } else {
       setError(result.error);
@@ -58,132 +52,228 @@ const Register = () => {
     setLoading(false);
   };
 
+  const roleInfo = {
+    USER: {
+      icon: '🛍️',
+      title: 'Shopper',
+      desc: 'Browse and shop eco-friendly products',
+      color: 'from-blue-500 to-cyan-500'
+    },
+    SELLER: {
+      icon: '🏪',
+      title: 'Seller',
+      desc: 'List and sell sustainable products',
+      color: 'from-eco-500 to-leaf-500'
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-green-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Join EcoBazaar
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Create your account to start sustainable shopping
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-mesh-gradient py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        {/* Left Side - Branding */}
+        <div className="hidden lg:block animate-fade-in">
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center gap-3 mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-eco-500 rounded-2xl blur-xl opacity-50 animate-pulse-eco"></div>
+                <div className="relative bg-gradient-to-br from-primary-500 to-eco-600 p-4 rounded-2xl shadow-large">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+              </div>
+              <div>
+                <h1 className="text-4xl font-display font-bold text-gradient-eco">
+                  EcoBazaar
+                </h1>
+                <p className="text-sm text-gray-500 font-medium">Sustainable Shopping Platform</p>
+              </div>
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+              Start Your{' '}
+              <span className="text-gradient-eco">Eco-Friendly Journey</span>
+            </h2>
+            
+            <p className="text-lg text-gray-600 mb-8">
+              Join our community of conscious consumers and sustainable sellers making a difference.
+            </p>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {[
+                { number: '10K+', label: 'Eco Products' },
+                { number: '5K+', label: 'Happy Users' },
+                { number: '2M kg', label: 'Carbon Saved' },
+                { number: '500+', label: 'Sellers' },
+              ].map((stat, index) => (
+                <div
+                  key={index}
+                  className="p-4 rounded-xl bg-white/50 border border-primary-100 animate-slide-up"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="text-2xl font-bold text-gradient-eco">{stat.number}</div>
+                  <div className="text-sm text-gray-600">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <Card className="animate-fade-in">
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {error}
-            </div>
-          )}
-          
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
-              <input
-                id="fullName"
-                name="fullName"
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your full name"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Create a password"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
-                Account Type
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-              >
-                {allowedRoles.map(role => (
-                  <option key={role} value={role}>
-                    {role === 'USER' ? '🥬 Shopper' : '🛍️ Seller'}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-1 text-xs text-gray-500">
-                {formData.role === 'USER' 
-                  ? 'Shop for eco-friendly products' 
-                  : 'Sell your sustainable products'}
+        {/* Right Side - Register Form */}
+        <div className="animate-scale-in">
+          <div className="bg-white rounded-3xl shadow-large p-8 md:p-10 border border-gray-100">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl md:text-3xl font-display font-bold text-gray-900 mb-2">
+                Create Account
+              </h3>
+              <p className="text-gray-600">
+                Join the sustainable shopping revolution
               </p>
             </div>
 
-            <div>
-              <Button
+            {error && (
+              <div className="alert-error mb-6 animate-slide-down">
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className="input-modern pl-12"
+                    placeholder="John Doe"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="input-modern pl-12"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="input-modern pl-12"
+                    placeholder="Create a strong password"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Account Type
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {allowedRoles.map(role => {
+                    const info = roleInfo[role];
+                    return (
+                      <label
+                        key={role}
+                        className={`relative cursor-pointer ${
+                          formData.role === role ? 'ring-2 ring-primary-500' : ''
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="role"
+                          value={role}
+                          checked={formData.role === role}
+                          onChange={handleChange}
+                          className="sr-only"
+                        />
+                        <div className={`p-4 rounded-xl border-2 transition-all ${
+                          formData.role === role
+                            ? 'border-primary-500 bg-primary-50'
+                            : 'border-gray-200 bg-white hover:border-primary-300'
+                        }`}>
+                          <div className="text-3xl mb-2">{info.icon}</div>
+                          <div className="font-semibold text-gray-900 mb-1">{info.title}</div>
+                          <div className="text-xs text-gray-600">{info.desc}</div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button
                 type="submit"
-                variant="success"
-                size="large"
                 disabled={loading}
-                className="w-full flex justify-center"
+                className="btn-eco w-full !text-base"
               >
                 {loading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Creating account...
-                  </>
+                  <span className="flex items-center justify-center gap-3">
+                    <div className="spinner !w-5 !h-5 !border-2 !border-white/30 !border-t-white"></div>
+                    Creating your account...
+                  </span>
                 ) : (
-                  'Create Account'
+                  'Create Your Account'
                 )}
-              </Button>
+              </button>
+            </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-gray-600">
+                Already have an account?{' '}
+                <Link
+                  to="/login"
+                  className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
+                >
+                  Sign in here
+                </Link>
+              </p>
             </div>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500 transition-colors">
-                Sign in here
-              </Link>
-            </p>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

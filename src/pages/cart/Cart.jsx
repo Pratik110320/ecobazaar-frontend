@@ -1,13 +1,10 @@
-// src/pages/cart/Cart.jsx - Updated with Tailwind CSS
+// src/pages/cart/Cart.jsx - Redesigned
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { orderService, cartService } from '../../services/api';
 import CartItem from '../../components/cart/CartItem';
 import CartFilters from '../../components/cart/CartFilters';
-import Button from '../../components/ui/Button';
-import Card from '../../components/ui/Card';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const Cart = () => {
   const { cart, loading, removeFromCart, refreshCart } = useCart();
@@ -46,7 +43,6 @@ const Cart = () => {
     
     let items = [...cart.items];
     
-    // Apply filters locally
     if (filters.category) {
       items = items.filter(item => item.category === filters.category);
     }
@@ -67,7 +63,6 @@ const Cart = () => {
       items = items.filter(item => item.carbonFootprint <= parseFloat(filters.maxCarbon));
     }
     
-    // Apply sorting
     if (filters.sortBy) {
       items = applySorting(items, filters.sortBy);
     }
@@ -131,7 +126,7 @@ const Cart = () => {
       });
 
       alert('Order created successfully!');
-      await refreshCart(); // Clear the cart
+      await refreshCart();
     } catch (error) {
       alert('Checkout failed: ' + (error.response?.data?.error || error.message));
     } finally {
@@ -141,40 +136,63 @@ const Cart = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
-        <LoadingSpinner text="Loading your cart..." />
+      <div className="min-h-screen flex items-center justify-center bg-mesh-gradient">
+        <div className="text-center">
+          <div className="spinner !w-16 !h-16 mb-4"></div>
+          <p className="text-gray-600">Loading your cart...</p>
+        </div>
       </div>
     );
   }
 
   if (!cart || !filteredCart || !filteredCart.items || filteredCart.items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">🛒 Shopping Cart</h1>
-            <p className="text-xl text-gray-600">Your eco-friendly shopping journey</p>
+      <div className="page-wrapper">
+        <div className="container-modern">
+          <div className="section-header">
+            <h1 className="section-title">Shopping Cart</h1>
+            <p className="section-subtitle">Your eco-friendly selections</p>
           </div>
           
-          <Card className="text-center py-16">
-            <div className="text-6xl mb-4">🛒</div>
-            <h3 className="text-2xl font-semibold text-gray-700 mb-2">Your cart is empty</h3>
-            <p className="text-gray-500 mb-6">Add some sustainable products to get started!</p>
-            <Button as="a" href="/products" variant="success" size="large">
-              Continue Shopping
-            </Button>
-          </Card>
+          <div className="card-modern text-center py-20 animate-scale-in">
+            <div className="max-w-md mx-auto">
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary-100 to-eco-100 flex items-center justify-center">
+                <svg className="w-16 h-16 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Your Cart is Empty
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Start adding sustainable products to make an eco-friendly impact!
+              </p>
+              <a href="/products" className="btn-eco inline-block">
+                <span className="flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  Browse Products
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">🛒 Shopping Cart</h1>
-          <p className="text-xl text-gray-600">Review your eco-friendly selections</p>
+    <div className="page-wrapper">
+      <div className="container-modern">
+        <div className="section-header">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-eco-100 text-eco-700 font-semibold text-sm mb-4 animate-fade-in">
+            <span className="text-lg">🛒</span>
+            <span>{filteredCart.totalItems} {filteredCart.totalItems === 1 ? 'Item' : 'Items'}</span>
+          </div>
+          
+          <h1 className="section-title">Shopping Cart</h1>
+          <p className="section-subtitle">Review and manage your eco-friendly selections</p>
         </div>
 
         <CartFilters 
@@ -184,59 +202,98 @@ const Cart = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            {filteredCart.items.map(item => (
-              <CartItem 
+            {filteredCart.items.map((item, index) => (
+              <div
                 key={item.id}
-                item={item}
-                onRemove={handleRemoveItem}
-              />
+                className="animate-slide-up"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <CartItem 
+                  item={item}
+                  onRemove={handleRemoveItem}
+                />
+              </div>
             ))}
           </div>
 
-          <Card className="h-fit">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Items:</span>
-                <span className="font-semibold">{filteredCart.totalItems}</span>
+          <div className="lg:sticky lg:top-24 h-fit">
+            <div className="card-eco p-6 animate-scale-in">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Order Summary
+              </h3>
+              
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between items-center pb-4 border-b border-primary-100">
+                  <span className="text-gray-600 font-medium">Items</span>
+                  <span className="text-xl font-bold text-gray-900">{filteredCart.totalItems}</span>
+                </div>
+                
+                <div className="flex justify-between items-center pb-4 border-b border-primary-100">
+                  <span className="text-gray-600 font-medium">Subtotal</span>
+                  <span className="text-2xl font-bold text-gradient-eco">
+                    ${filteredCart.totalAmount.toFixed(2)}
+                  </span>
+                </div>
+                
+                <div className="p-4 rounded-xl bg-gradient-to-br from-eco-50 to-leaf-50 border border-eco-200">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-eco-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <div className="font-bold text-eco-800 text-lg mb-1">
+                        {filteredCart.totalCarbon.toFixed(2)}kg CO₂
+                      </div>
+                      <p className="text-sm text-eco-700 leading-relaxed">
+                        Your carbon footprint for this order
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Amount:</span>
-                <span className="font-semibold text-green-600">${filteredCart.totalAmount.toFixed(2)}</span>
+              
+              <div className="space-y-3">
+                <button 
+                  onClick={handleCheckout}
+                  disabled={checkoutLoading}
+                  className="btn-eco w-full !text-base"
+                >
+                  {checkoutLoading ? (
+                    <span className="flex items-center justify-center gap-3">
+                      <div className="spinner !w-5 !h-5 !border-2 !border-white/30 !border-t-white"></div>
+                      Processing...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Proceed to Checkout
+                    </span>
+                  )}
+                </button>
+                
+                <a href="/products" className="btn-secondary w-full text-center !py-3">
+                  Continue Shopping
+                </a>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Carbon Footprint:</span>
-                <span className="font-semibold text-eco-600">{filteredCart.totalCarbon.toFixed(2)}kg CO₂</span>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-eco-50 rounded-lg mb-4">
-              <div className="flex items-center text-sm text-eco-800">
-                <span className="text-lg mr-2">🌱</span>
-                <span>Your cart saves {filteredCart.totalCarbon.toFixed(2)}kg of carbon compared to conventional products!</span>
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleCheckout}
-              disabled={checkoutLoading}
-              variant="success"
-              size="large"
-              className="w-full"
-            >
-              {checkoutLoading ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+
+              <div className="mt-6 pt-6 border-t-2 border-primary-100">
+                <div className="flex items-start gap-3 text-sm text-gray-600">
+                  <svg className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
-                  Processing...
-                </>
-              ) : (
-                'Proceed to Checkout'
-              )}
-            </Button>
-          </Card>
+                  <div>
+                    <div className="font-semibold text-gray-900 mb-1">Secure Checkout</div>
+                    <p className="leading-relaxed">Your payment information is encrypted and secure</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

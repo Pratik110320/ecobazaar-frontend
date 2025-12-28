@@ -1,5 +1,5 @@
-// src/components/layout/Navbar.jsx - Updated with Tailwind CSS
-import React from 'react';
+// src/components/layout/Navbar.jsx - Redesigned
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -8,164 +8,202 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const { cart } = useCart();
   const location = useLocation();
-
-  const handleLogout = () => {
-    logout();
-  };
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getCartItemCount = () => {
     return cart?.items?.length || 0;
   };
 
   const isActiveLink = (path) => {
-    return location.pathname === path ? 'bg-primary-100 text-primary-700 border-primary-500' : 'text-gray-700 hover:bg-gray-100';
+    return location.pathname === path;
+  };
+
+  const NavLink = ({ to, children, icon }) => {
+    const active = isActiveLink(to);
+    return (
+      <Link
+        to={to}
+        className={`group relative px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200 ${
+          active
+            ? 'text-primary-700 bg-primary-50'
+            : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50/50'
+        }`}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        <span className="flex items-center gap-2">
+          {icon && <span className="text-lg">{icon}</span>}
+          {children}
+        </span>
+        {active && (
+          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-primary-500 to-eco-500 rounded-full"></span>
+        )}
+      </Link>
+    );
   };
 
   return (
-    <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Brand */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="flex items-center space-x-2 text-2xl font-bold text-eco-600">
-              <span className="text-3xl">🌱</span>
-              <span>EcoBazaar</span>
-            </Link>
-          </div>
-          
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-1">
-            {user ? (
-              <>
-                <Link 
-                  to="/" 
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActiveLink('/')}`}
-                >
-                  Dashboard
-                </Link>
-                
-                {/* Only show Products and Cart to USER role */}
-                {user.role === 'USER' && (
-                  <>
-                    <Link 
-                      to="/products" 
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActiveLink('/products')}`}
-                    >
-                      Products
-                    </Link>
-                    <Link 
-                      to="/cart" 
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 relative ${isActiveLink('/cart')}`}
-                    >
+    <nav className="sticky top-0 z-50 glass border-b border-white/20 shadow-soft">
+      <div className="container-modern">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-eco-500 rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
+              <div className="relative bg-gradient-to-br from-primary-500 to-eco-600 p-2 rounded-xl shadow-medium">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl md:text-2xl font-display font-bold text-gradient-eco">
+                EcoBazaar
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium -mt-1">Sustainable Shopping</span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          {user && (
+            <div className="hidden md:flex items-center gap-2">
+              <NavLink to="/" icon="🏠">Dashboard</NavLink>
+              
+              {user.role === 'USER' && (
+                <>
+                  <NavLink to="/products" icon="🛍️">Products</NavLink>
+                  <NavLink to="/cart" icon="🛒">
+                    <span className="flex items-center gap-2">
                       Cart
                       {getCartItemCount() > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-eco-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        <span className="flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gradient-to-r from-eco-500 to-leaf-500 rounded-full animate-pulse-eco">
                           {getCartItemCount()}
                         </span>
                       )}
-                    </Link>
-                  </>
-                )}
-                
-                {/* Show Orders to all authenticated users */}
-                <Link 
-                  to="/orders" 
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActiveLink('/orders')}`}
-                >
-                  Orders
-                </Link>
-                
-                {/* Role-specific panels */}
-                {user.role === 'SELLER' && (
-                  <Link 
-                    to="/seller" 
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActiveLink('/seller')}`}
-                  >
-                    Seller Panel
-                  </Link>
-                )}
-                
-                {user.role === 'ADMIN' && (
-                  <Link 
-                    to="/admin" 
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActiveLink('/admin')}`}
-                  >
-                    Admin Panel
-                  </Link>
-                )}
-                
-                {/* User Menu */}
-                <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-gray-200">
-                  <span className="text-sm text-gray-600">
-                    Welcome, <span className="font-semibold">{user.fullName}</span>
-                  </span>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-eco-100 text-eco-800">
-                    {user.role}
-                  </span>
-                  <button 
-                    onClick={handleLogout} 
-                    className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
-                  >
-                    Logout
-                  </button>
+                    </span>
+                  </NavLink>
+                </>
+              )}
+              
+              <NavLink to="/orders" icon="📦">Orders</NavLink>
+              
+              {user.role === 'SELLER' && (
+                <NavLink to="/seller" icon="🏪">Seller Panel</NavLink>
+              )}
+              
+              {user.role === 'ADMIN' && (
+                <NavLink to="/admin" icon="👑">Admin Panel</NavLink>
+              )}
+            </div>
+          )}
+
+          {/* Auth Section */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-primary-50 to-eco-50 border border-primary-100">
+                  <div className="text-right">
+                    <div className="text-sm font-semibold text-gray-900">{user.fullName}</div>
+                    <div className="text-xs text-gray-500">{user.role}</div>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-eco-500 flex items-center justify-center text-white font-bold shadow-medium">
+                    {user.fullName.charAt(0).toUpperCase()}
+                  </div>
                 </div>
+                <button
+                  onClick={logout}
+                  className="px-4 py-2 rounded-xl font-medium text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                >
+                  Logout
+                </button>
               </>
             ) : (
-              <>
-                <Link 
-                  to="/login" 
-                  className="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                >
+              <div className="flex items-center gap-3">
+                <Link to="/login" className="btn-secondary !py-2 !px-5 text-sm">
                   Login
                 </Link>
-                <Link 
-                  to="/register" 
-                  className="px-4 py-2 rounded-md text-sm font-medium bg-eco-500 text-white hover:bg-eco-600 transition-colors duration-200"
-                >
-                  Register
+                <Link to="/register" className="btn-eco !py-2 !px-5 text-sm">
+                  Get Started
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-xl text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
+              )}
+            </svg>
+          </button>
         </div>
-      </div>
 
-      {/* Mobile menu */}
-      <div className="md:hidden">
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-          {user ? (
-            <>
-              <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Dashboard</Link>
-              {user.role === 'USER' && (
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 animate-slide-down border-t border-white/20">
+            <div className="flex flex-col gap-2">
+              {user ? (
                 <>
-                  <Link to="/products" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Products</Link>
-                  <Link to="/cart" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Cart ({getCartItemCount()})</Link>
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 p-4 mb-3 rounded-xl bg-gradient-to-r from-primary-50 to-eco-50 border border-primary-100">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-eco-500 flex items-center justify-center text-white font-bold text-lg shadow-medium">
+                      {user.fullName.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900">{user.fullName}</div>
+                      <div className="text-sm text-gray-500">{user.role}</div>
+                    </div>
+                  </div>
+
+                  <NavLink to="/" icon="🏠">Dashboard</NavLink>
+                  {user.role === 'USER' && (
+                    <>
+                      <NavLink to="/products" icon="🛍️">Products</NavLink>
+                      <NavLink to="/cart" icon="🛒">
+                        Cart {getCartItemCount() > 0 && `(${getCartItemCount()})`}
+                      </NavLink>
+                    </>
+                  )}
+                  <NavLink to="/orders" icon="📦">Orders</NavLink>
+                  {user.role === 'SELLER' && <NavLink to="/seller" icon="🏪">Seller Panel</NavLink>}
+                  {user.role === 'ADMIN' && <NavLink to="/admin" icon="👑">Admin Panel</NavLink>}
+                  
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="mt-4 w-full text-left px-4 py-3 rounded-xl font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+                  >
+                    Logout
+                  </button>
                 </>
+              ) : (
+                <div className="flex flex-col gap-3 mt-4">
+                  <Link
+                    to="/login"
+                    className="btn-secondary w-full text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="btn-eco w-full text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </div>
               )}
-              <Link to="/orders" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Orders</Link>
-              {user.role === 'SELLER' && (
-                <Link to="/seller" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Seller Panel</Link>
-              )}
-              {user.role === 'ADMIN' && (
-                <Link to="/admin" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Admin Panel</Link>
-              )}
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Login</Link>
-              <Link to="/register" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Register</Link>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
