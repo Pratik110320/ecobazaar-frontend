@@ -1,14 +1,52 @@
-// src/services/api.js - CORRECTED VERSION (remove userService)
+// src/services/api.js - COMPLETE CORRECTED VERSION
+
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api';
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 });
+
+// Request interceptor
+api.interceptors.request.use(
+  config => {
+    const token =
+      localStorage.getItem('token') ||
+      localStorage.getItem('access_token') ||
+      sessionStorage.getItem('token');
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+
+// Response interceptor
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (!error.response) {
+      console.error('❌ Network error – is the back-end running on', API_BASE, '?');
+    } else if (error.response.status === 401) {
+      console.warn('🔐 Unauthorized – clearing stale JWT and redirecting to login');
+      localStorage.removeItem('token');
+      localStorage.removeItem('access_token');
+      window.location.href = '/login';
+    } else if (error.response.status >= 500) {
+      console.error('🚨 Server error (5xx):', error.response);
+    } else {
+      console.warn('⚠️ API warning:', error.response);
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Authentication Services
 export const authService = {
@@ -56,12 +94,107 @@ export const categoryService = {
   delete: (id) => api.delete(`/categories/${id}`)
 };
 
-// Wishlist Services
+// Wishlist Services - CORRECTED VERSION
 export const wishlistService = {
-  getUserWishlist: (userId) => api.get(`/wishlist/${userId}`),
-  addToWishlist: (userId, productId) => api.post(`/wishlist/${userId}`, { productId }),
-  removeFromWishlist: (userId, productId) => api.delete(`/wishlist/${userId}/${productId}`),
+  getUserWishlist: async (userId) => {
+    try {
+      const response = await api.get(`/wishlist/${userId}`);
+      
+      // If wishlist entries only have productId, fetch full product details
+      const wishlistWithProducts = await Promise.all(
+        response.data.map(async (item) => {
+          if (item.productId && !item.product) {
+            try {
+              const productResponse = await api.get(`/products/${item.productId}`);
+              return {
+                ...item,
+                product: productResponse.data
+              };
+            } catch (error) {
+              console.error(`Failed to fetch product ${item.productId}:`, error);
+              return item;
+            }
+          }
+          return item;
+        })
+      );
+      
+      return { data: wishlistWithProducts };
+    } catch (error) {
+      console.error('Failed to load wishlist:', error);
+      throw error;
+    }
+  },
+  
+  // Try different endpoint patterns
+  addToWishlist: (userId, productId) => {
+    // Try standard pattern first, then fallback
+    return api.post(`/wishlist/${userId}`, { productId });
+  },
+  
+  removeFromWishlist: async (userId, productId) => {
+    // Try multiple endpoint patterns
+    const endpoints = [
+      `/wishlist/${userId}/${productId}`, // Most likely based on your error
+      `/wishlist/remove?userId=${userId}&productId=${productId}`,
+      `/wishlist/${userId}?productId=${productId}`
+    ];
+    
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`🔧 Trying endpoint: DELETE ${endpoint}`);
+        const response = await api.delete(endpoint);
+        console.log(`✅ Success with: ${endpoint}`);
+        return response;
+      } catch (error) {
+        console.log(`❌ Failed with: ${endpoint} - ${error.response?.status}`);
+        // Continue to next endpoint
+      }
+    }
+    
+    throw new Error('All endpoint patterns failed - check backend API');
+  },
+  
   checkWishlist: (userId, productId) => api.get(`/wishlist/${userId}/check/${productId}`)
+};
+
+// Debug function to test endpoints
+export const debugWishlistEndpoints = async (userId, productId) => {
+  console.log('🔍 Testing wishlist endpoints...');
+  
+  const testEndpoints = [
+    {
+      method: 'DELETE',
+      url: `/wishlist/${userId}/${productId}`,
+      description: 'Direct ID pattern'
+    },
+    {
+      method: 'DELETE', 
+      url: `/wishlist/remove?userId=${userId}&productId=${productId}`,
+      description: 'Query params pattern'
+    },
+    {
+      method: 'DELETE',
+      url: `/wishlist/${userId}`,
+      data: { productId },
+      description: 'Body data pattern'
+    }
+  ];
+  
+  for (const test of testEndpoints) {
+    try {
+      console.log(`Testing: ${test.method} ${test.url}`);
+      let response;
+      if (test.method === 'DELETE') {
+        response = await api.delete(test.url, test.data ? { data: test.data } : {});
+      }
+      console.log(`✅ ${test.description}: Success`);
+      return test;
+    } catch (error) {
+      console.log(`❌ ${test.description}:`, error.response?.status, error.response?.data);
+    }
+  }
+  return null;
 };
 
 // Review Services

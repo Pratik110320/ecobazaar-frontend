@@ -1,4 +1,4 @@
-// src/App.jsx - Updated with Tailwind CSS
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -13,15 +13,16 @@ import Orders from './pages/orders/Orders';
 import Dashboard from './pages/dashboard/Dashboard';
 import AdminPanel from './pages/admin/AdminPanel';
 import SellerPanel from './pages/seller/SellerPanel';
-
+import Wishlist from './pages/wishlist/Wishlist'; // Add this import
+import { WishlistProvider } from './context/WishlistContext';
 const ProtectedRoute = ({ children, roles = [] }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-emerald-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
           <p className="text-lg text-gray-600">Loading...</p>
         </div>
       </div>
@@ -43,9 +44,9 @@ function AppContent() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50">
       <Navbar />
-      <main className="main-content">
+      <main>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
@@ -54,9 +55,7 @@ function AppContent() {
           {/* Protected Routes */}
           <Route path="/" element={
             <ProtectedRoute>
-              {user?.role === 'ADMIN' ? <AdminPanel /> : 
-               user?.role === 'SELLER' ? <SellerPanel /> : 
-               <Dashboard />}
+              <Dashboard />
             </ProtectedRoute>
           } />
           
@@ -78,29 +77,31 @@ function AppContent() {
             </ProtectedRoute>
           } />
           
+          <Route path="/wishlist" element={ // Add this route
+            <ProtectedRoute roles={['USER']}>
+              <Wishlist />
+            </ProtectedRoute>
+          } />
+          
           <Route path="/orders" element={
             <ProtectedRoute>
               <Orders />
             </ProtectedRoute>
           } />
           
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin" element={
+          <Route path="/admin/*" element={
             <ProtectedRoute roles={['ADMIN']}>
               <AdminPanel />
             </ProtectedRoute>
           } />
           
-          <Route path="/seller" element={
+          <Route path="/seller/*" element={
             <ProtectedRoute roles={['SELLER']}>
               <SellerPanel />
             </ProtectedRoute>
           } />
+          
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
     </div>
@@ -112,7 +113,9 @@ function App() {
     <Router>
       <AuthProvider>
         <CartProvider>
+           <WishlistProvider> 
           <AppContent />
+           </WishlistProvider> 
         </CartProvider>
       </AuthProvider>
     </Router>

@@ -1,32 +1,41 @@
+// src/components/products/ProductCard.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { motion } from 'framer-motion';
+import {
+  FiShoppingBag,
+  FiClock,
+  FiCheckCircle,
+  FiStar,
+  FiPackage,
+  FiTag,
+  FiHeart,
+} from 'react-icons/fi';
+
+// ------------------------------------------------------------------
+// Local fallback image – placed in the public folder (public/no-image.png)
+// ------------------------------------------------------------------
+const LOCAL_PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZWVlZWVlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5Njk2OTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const { checkInWishlist, toggleWishlist, loading: wishlistLoading } = useWishlist();
+
   const [adding, setAdding] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const handleAddToCart = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user || user.role !== 'USER') return;
-    
-    setAdding(true);
-    try {
-      const result = await addToCart(product.id, 1);
-      if (!result.success) {
-        alert(result.error);
-      }
-    } catch (error) {
-      alert('Failed to add to cart');
-    } finally {
-      setAdding(false);
-    }
-  };
+  // ------------------------------------------------------------------
+  // Build the final image URL – fall back to the local placeholder.
+  // ------------------------------------------------------------------
+  const imageUrl = imageError || !product.imageUrl ? LOCAL_PLACEHOLDER : product.imageUrl;
 
+  // ------------------------------------------------------------------
+  // Helper to pick colour based on eco‑rating
+  // ------------------------------------------------------------------
   const getEcoRatingConfig = (rating) => {
     const configs = {
       'A+': { bg: 'bg-emerald-500', text: 'text-white', label: 'Excellent' },
@@ -39,135 +48,199 @@ const ProductCard = ({ product }) => {
   };
 
   const ecoConfig = getEcoRatingConfig(product.ecoRating);
+  const isInWishlist = checkInWishlist(product.id);
+
+  // ------------------------------------------------------------------
+  // Cart handling
+  // ------------------------------------------------------------------
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user || user.role !== 'USER') return;
+
+    setAdding(true);
+    try {
+      const result = await addToCart(product.id, 1);
+      if (!result.success) alert(result.error);
+    } catch (error) {
+      alert('Failed to add to cart');
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // Wishlist handling
+  // ------------------------------------------------------------------
+  const handleWishlist = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user || user.role !== 'USER') return;
+
+    try {
+      await toggleWishlist(product.id);
+    } catch (error) {
+      console.error('Wishlist error:', error);
+      alert('Failed to update wishlist');
+    }
+  };
 
   return (
-    // ADDED 'group' class here to the Link element
-    <Link to={`/products/${product.id}`} className="product-card block h-full group">
-      {/* Image Section */}
-      <div className="product-image-wrapper aspect-square relative">
-        <img 
-          src={imageError ? '/placeholder-product.jpg' : (product.imageUrl || '/placeholder-product.jpg')} 
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ y: -5 }}
+      className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden h-full flex flex-col hover:shadow-md transition-all duration-300"
+    >
+      {/* --------------------------------------------------------------
+          Image + overlay badges
+       -------------------------------------------------------------- */}
+      <Link
+        to={`/products/${product.id}`}
+        className="relative overflow-hidden block"
+      >
+        <img
+          src={imageUrl}
           alt={product.name}
           onError={() => setImageError(true)}
-          className="product-image group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-56 object-cover transition-transform duration-500 hover:scale-105"
         />
-        
-        {/* Overlay badges */}
+
+        {/* Badges (Featured / Pending) */}
         <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
           <div className="flex flex-col gap-2">
             {product.featured && (
-              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-medium">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
+              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md">
+                <FiStar className="text-xs" />
                 Featured
               </span>
             )}
-            
             {!product.verified && (
-              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/90 text-orange-600 shadow-soft">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                </svg>
+              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/90 text-amber-600 shadow-sm">
+                <FiClock className="text-xs" />
                 Pending
               </span>
             )}
           </div>
-          
-          {/* Eco Rating Badge */}
-          <div className={`${ecoConfig.bg} ${ecoConfig.text} px-3 py-1.5 rounded-full shadow-medium`}>
+
+          {/* Eco‑rating badge */}
+          <div className={`${ecoConfig.bg} ${ecoConfig.text} px-3 py-1.5 rounded-full shadow-md`}>
             <div className="text-xs font-bold flex items-center gap-1">
-              <span>🌱</span>
+              <FiPackage className="text-xs" />
               <span>{product.ecoRating || 'N/A'}</span>
             </div>
           </div>
         </div>
 
-        {/* Quick view overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4">
-          <span className="text-white font-semibold text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+        {/* Wishlist button (only for normal users) */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2">
+          {user?.role === 'USER' && (
+            <button
+              onClick={handleWishlist}
+              disabled={wishlistLoading}
+              className={`p-2 rounded-full shadow-md transition ${
+                isInWishlist
+                  ? 'bg-rose-500 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+              aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+            >
+              {wishlistLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+              ) : (
+                <FiHeart className={isInWishlist ? 'fill-current' : ''} />
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* Hover overlay "View Details →" */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4">
+          <span className="text-white font-semibold text-sm transform translate-y-4 hover:translate-y-0 transition-transform duration-300">
             View Details →
           </span>
         </div>
-      </div>
-      
-      {/* Content Section */}
+      </Link>
+
+      {/* --------------------------------------------------------------
+          Content (title, description, price, carbon, category, actions)
+       -------------------------------------------------------------- */}
       <div className="p-5 flex flex-col flex-1">
+        {/* Title */}
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-bold text-gray-900 text-lg leading-tight line-clamp-2 flex-1 group-hover:text-primary-600 transition-colors">
+          <Link
+            to={`/products/${product.id}`}
+            className="font-bold text-gray-900 text-lg leading-tight line-clamp-2 hover:text-emerald-600 transition-colors"
+          >
             {product.name}
-          </h3>
+          </Link>
         </div>
-        
+
+        {/* Description */}
         <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
           {product.description}
         </p>
-        
-        {/* Price and Carbon */}
+
+        {/* Price & carbon */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="text-2xl font-bold text-gradient-eco">
+            <div className="text-2xl font-bold text-emerald-600">
               ${product.price}
             </div>
             <div className="text-xs text-gray-500">per unit</div>
           </div>
-          
+
           <div className="text-right">
             <div className="flex items-center gap-1 text-gray-700 font-semibold">
-              <svg className="w-4 h-4 text-eco-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <FiPackage className="text-emerald-600" />
               <span className="text-sm">{product.carbonFootprint}kg</span>
             </div>
             <div className="text-xs text-gray-500">CO₂</div>
           </div>
         </div>
 
-        {/* Category Badge */}
+        {/* Category badge */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary-50 text-primary-700 border border-primary-100">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-            </svg>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+            <FiTag className="text-xs" />
             {product.category}
           </span>
         </div>
-        
-        {/* Add to Cart Button */}
+
+        {/* Action buttons – only for normal users */}
         {user?.role === 'USER' && (
-          <button 
-            onClick={handleAddToCart}
-            disabled={adding || !product.verified}
-            className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
-              product.verified
-                ? 'bg-gradient-to-r from-primary-600 to-eco-600 hover:from-primary-700 hover:to-eco-700 text-white shadow-soft hover:shadow-medium transform hover:-translate-y-0.5'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            } disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
-          >
-            {adding ? (
-              <>
-                <div className="spinner !w-4 !h-4 !border-2 !border-white/30 !border-t-white"></div>
-                Adding...
-              </>
-            ) : product.verified ? (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Add to Cart
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                </svg>
-                Pending Verification
-              </>
-            )}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleAddToCart}
+              disabled={adding || !product.verified}
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+                product.verified
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-sm hover:shadow-md transform hover:-translate-y-0.5'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              } disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+            >
+              {adding ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                  Adding...
+                </>
+              ) : product.verified ? (
+                <>
+                  <FiShoppingBag />
+                  Add to Cart
+                </>
+              ) : (
+                <>
+                  <FiClock />
+                  Pending Verification
+                </>
+              )}
+            </button>
+          </div>
         )}
       </div>
-    </Link>
+    </motion.div>
   );
 };
 

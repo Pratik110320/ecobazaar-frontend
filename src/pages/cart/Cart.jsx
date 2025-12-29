@@ -1,10 +1,23 @@
-// src/pages/cart/Cart.jsx - Redesigned
+// src/pages/cart/Cart.jsx
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { orderService, cartService } from '../../services/api';
 import CartItem from '../../components/cart/CartItem';
 import CartFilters from '../../components/cart/CartFilters';
+import CheckoutForm from '../../components/cart/CheckoutForm';
+import { motion } from 'framer-motion';
+import { 
+  FiShoppingCart, 
+  FiPackage, 
+  FiCheckCircle, 
+  FiChevronRight,
+  FiRefreshCw,
+  FiTag,
+  FiCreditCard,
+  FiMapPin,
+  FiPhone
+} from 'react-icons/fi';
 
 const Cart = () => {
   const { cart, loading, removeFromCart, refreshCart } = useCart();
@@ -18,7 +31,8 @@ const Cart = () => {
     sortBy: ''
   });
   const [filteredCart, setFilteredCart] = useState(null);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState('cart');
+  const [orderData, setOrderData] = useState({});
 
   useEffect(() => {
     if (cart && user) {
@@ -105,76 +119,179 @@ const Cart = () => {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleProceedToCheckout = () => {
+    setCheckoutStep('checkout');
+  };
+
+  const handleCheckoutSubmit = async (data) => {
+    setOrderData(data);
+    setCheckoutStep('confirmation');
+  };
+
+  const handlePlaceOrder = async () => {
     if (!user) return;
     
-    setCheckoutLoading(true);
     try {
-      const address = prompt('Enter shipping address:');
-      const phone = prompt('Enter contact phone:');
-      const paymentMethod = prompt('Enter payment method (Credit Card/COD):', 'Credit Card');
-      
-      if (!address || !phone) {
-        alert('Address and phone are required');
-        return;
-      }
-
       await orderService.create(user.id, {
-        address,
-        phone,
-        paymentMethod
+        address: orderData.address,
+        phone: orderData.phone,
+        paymentMethod: orderData.paymentMethod
       });
 
       alert('Order created successfully!');
       await refreshCart();
+      setCheckoutStep('success');
     } catch (error) {
       alert('Checkout failed: ' + (error.response?.data?.error || error.message));
-    } finally {
-      setCheckoutLoading(false);
     }
+  };
+
+  const handleBackToCart = () => {
+    setCheckoutStep('cart');
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-mesh-gradient">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-emerald-50">
         <div className="text-center">
-          <div className="spinner !w-16 !h-16 mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-500 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your cart...</p>
         </div>
       </div>
     );
   }
 
-  if (!cart || !filteredCart || !filteredCart.items || filteredCart.items.length === 0) {
+  if (checkoutStep === 'checkout') {
     return (
-      <div className="page-wrapper">
-        <div className="container-modern">
-          <div className="section-header">
-            <h1 className="section-title">Shopping Cart</h1>
-            <p className="section-subtitle">Your eco-friendly selections</p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8"
+          >
+            <button 
+              onClick={handleBackToCart}
+              className="flex items-center text-emerald-600 hover:text-emerald-700 mb-6"
+            >
+              <FiChevronRight className="transform rotate-180 mr-1" />
+              Back to Cart
+            </button>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
+            <p className="text-gray-600">Complete your purchase information</p>
+          </motion.div>
           
-          <div className="card-modern text-center py-20 animate-scale-in">
-            <div className="max-w-md mx-auto">
-              <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary-100 to-eco-100 flex items-center justify-center">
-                <svg className="w-16 h-16 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <CheckoutForm onSubmit={handleCheckoutSubmit} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (checkoutStep === 'confirmation') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8 text-center"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 mb-6">
+              <FiCreditCard className="text-3xl" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Confirmation</h1>
+            <p className="text-gray-600">Please review your order details</p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <FiMapPin className="mr-2 text-emerald-600" />
+                  Shipping Information
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex">
+                    <span className="text-gray-500 w-32">Address:</span>
+                    <span className="text-gray-900">{orderData.address}</span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-gray-500 w-32">Phone:</span>
+                    <span className="text-gray-900">{orderData.phone}</span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-gray-500 w-32">Payment Method:</span>
+                    <span className="text-gray-900">{orderData.paymentMethod}</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Your Cart is Empty
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Start adding sustainable products to make an eco-friendly impact!
-              </p>
-              <a href="/products" className="btn-eco inline-block">
-                <span className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                  Browse Products
-                </span>
-              </a>
+              
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
+                <div className="space-y-4">
+                  {filteredCart?.items?.map((item) => (
+                    <div key={item.id} className="flex justify-between items-center py-3 border-b border-gray-100">
+                      <div>
+                        <div className="font-medium text-gray-900">{item.productName}</div>
+                        <div className="text-sm text-gray-500">Qty: {item.quantity}</div>
+                      </div>
+                      <div className="font-medium text-gray-900">${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                  ))}
+                  <div className="flex justify-between items-center pt-4">
+                    <div className="text-lg font-bold text-gray-900">Total</div>
+                    <div className="text-2xl font-bold text-emerald-600">
+                      ${filteredCart?.totalAmount?.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="lg:sticky lg:top-24 h-fit">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <FiPackage className="text-emerald-600" />
+                  Environmental Impact
+                </h3>
+                
+                <div className="space-y-4 mb-6">
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+                    <div className="flex items-start gap-3">
+                      <FiPackage className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <div className="font-bold text-emerald-800 text-lg mb-1">
+                          {filteredCart?.totalCarbon?.toFixed(2)}kg CO₂
+                        </div>
+                        <p className="text-sm text-emerald-700 leading-relaxed">
+                          Your carbon footprint for this order
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <button 
+                    onClick={handlePlaceOrder}
+                    className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition font-medium flex items-center justify-center gap-2"
+                  >
+                    <FiCheckCircle />
+                    Place Order
+                  </button>
+                  
+                  <button 
+                    onClick={handleBackToCart}
+                    className="w-full py-3 px-4 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition font-medium"
+                  >
+                    Back to Cart
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -182,72 +299,165 @@ const Cart = () => {
     );
   }
 
+  if (checkoutStep === 'success') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8"
+          >
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-100 text-emerald-600 mb-6">
+              <FiCheckCircle className="text-4xl" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Order Placed Successfully!</h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Thank you for your purchase. Your order is being processed.
+            </p>
+            <a 
+              href="/orders" 
+              className="inline-flex items-center px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition font-medium"
+            >
+              View Order Status
+              <FiChevronRight className="ml-2" />
+            </a>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cart || !filteredCart || !filteredCart.items || filteredCart.items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+            <p className="text-gray-600">Your eco-friendly selections</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center"
+          >
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                <FiShoppingCart className="w-12 h-12 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Your Cart is Empty
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Start adding sustainable products to make an eco-friendly impact!
+              </p>
+              <a 
+                href="/products" 
+                className="inline-flex items-center px-5 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition font-medium"
+              >
+                <FiPackage className="mr-2" />
+                Browse Products
+                <FiChevronRight className="ml-2" />
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="page-wrapper">
-      <div className="container-modern">
-        <div className="section-header">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-eco-100 text-eco-700 font-semibold text-sm mb-4 animate-fade-in">
-            <span className="text-lg">🛒</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mb-8"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 font-semibold text-sm mb-4">
+            <FiShoppingCart className="text-lg" />
             <span>{filteredCart.totalItems} {filteredCart.totalItems === 1 ? 'Item' : 'Items'}</span>
           </div>
           
-          <h1 className="section-title">Shopping Cart</h1>
-          <p className="section-subtitle">Review and manage your eco-friendly selections</p>
-        </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+          <p className="text-gray-600">Review and manage your eco-friendly selections</p>
+        </motion.div>
 
-        <CartFilters 
-          filters={filters}
-          onFilterChange={setFilters}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <CartFilters 
+            filters={filters}
+            onFilterChange={setFilters}
+          />
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="lg:col-span-2 space-y-5"
+          >
             {filteredCart.items.map((item, index) => (
-              <div
+              <motion.div
                 key={item.id}
-                className="animate-slide-up"
-                style={{ animationDelay: `${index * 50}ms` }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.05 * index }}
               >
                 <CartItem 
                   item={item}
                   onRemove={handleRemoveItem}
                 />
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="lg:sticky lg:top-24 h-fit">
-            <div className="card-eco p-6 animate-scale-in">
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="lg:sticky lg:top-24 h-fit"
+          >
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+                <FiPackage className="text-emerald-600" />
                 Order Summary
               </h3>
               
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between items-center pb-4 border-b border-primary-100">
+                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
                   <span className="text-gray-600 font-medium">Items</span>
                   <span className="text-xl font-bold text-gray-900">{filteredCart.totalItems}</span>
                 </div>
                 
-                <div className="flex justify-between items-center pb-4 border-b border-primary-100">
+                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
                   <span className="text-gray-600 font-medium">Subtotal</span>
-                  <span className="text-2xl font-bold text-gradient-eco">
+                  <span className="text-2xl font-bold text-emerald-600">
                     ${filteredCart.totalAmount.toFixed(2)}
                   </span>
                 </div>
                 
-                <div className="p-4 rounded-xl bg-gradient-to-br from-eco-50 to-leaf-50 border border-eco-200">
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200">
                   <div className="flex items-start gap-3">
-                    <svg className="w-6 h-6 text-eco-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <FiPackage className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-bold text-eco-800 text-lg mb-1">
+                      <div className="font-bold text-emerald-800 text-lg mb-1">
                         {filteredCart.totalCarbon.toFixed(2)}kg CO₂
                       </div>
-                      <p className="text-sm text-eco-700 leading-relaxed">
+                      <p className="text-sm text-emerald-700 leading-relaxed">
                         Your carbon footprint for this order
                       </p>
                     </div>
@@ -257,35 +467,24 @@ const Cart = () => {
               
               <div className="space-y-3">
                 <button 
-                  onClick={handleCheckout}
-                  disabled={checkoutLoading}
-                  className="btn-eco w-full !text-base"
+                  onClick={handleProceedToCheckout}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition font-medium flex items-center justify-center gap-2"
                 >
-                  {checkoutLoading ? (
-                    <span className="flex items-center justify-center gap-3">
-                      <div className="spinner !w-5 !h-5 !border-2 !border-white/30 !border-t-white"></div>
-                      Processing...
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Proceed to Checkout
-                    </span>
-                  )}
+                  <FiCheckCircle />
+                  Proceed to Checkout
                 </button>
                 
-                <a href="/products" className="btn-secondary w-full text-center !py-3">
+                <a 
+                  href="/products" 
+                  className="w-full py-3 px-4 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition font-medium text-center block"
+                >
                   Continue Shopping
                 </a>
               </div>
 
-              <div className="mt-6 pt-6 border-t-2 border-primary-100">
+              <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-start gap-3 text-sm text-gray-600">
-                  <svg className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
+                  <FiCheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="font-semibold text-gray-900 mb-1">Secure Checkout</div>
                     <p className="leading-relaxed">Your payment information is encrypted and secure</p>
@@ -293,7 +492,7 @@ const Cart = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
