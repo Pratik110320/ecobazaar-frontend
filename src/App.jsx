@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/layout/Navbar';
+import Landing from './pages/Landing';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Products from './pages/products/Products';
@@ -13,7 +14,7 @@ import Orders from './pages/orders/Orders';
 import Dashboard from './pages/dashboard/Dashboard';
 import AdminPanel from './pages/admin/AdminPanel';
 import SellerPanel from './pages/seller/SellerPanel';
-import Wishlist from './pages/wishlist/Wishlist'; // Add this import
+import Wishlist from './pages/wishlist/Wishlist';
 import { WishlistProvider } from './context/WishlistContext';
 const ProtectedRoute = ({ children, roles = [] }) => {
   const { user, loading } = useAuth();
@@ -30,13 +31,13 @@ const ProtectedRoute = ({ children, roles = [] }) => {
   }
   
   if (!user) {
-    return <Navigate to="/login" />;
-  }
-  
-  if (roles.length > 0 && !roles.includes(user.role)) {
     return <Navigate to="/" />;
   }
-  
+
+  if (roles.length > 0 && !roles.includes(user.role)) {
+    return <Navigate to="/dashboard" />;
+  }
+
   return children;
 };
 
@@ -45,15 +46,16 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50">
-      <Navbar />
+      {user && <Navbar />}
       <main>
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-          <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
-          
+          <Route path="/" element={!user ? <Landing /> : <Navigate to="/dashboard" />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+          <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
+
           {/* Protected Routes */}
-          <Route path="/" element={
+          <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
@@ -100,8 +102,8 @@ function AppContent() {
               <SellerPanel />
             </ProtectedRoute>
           } />
-          
-          <Route path="*" element={<Navigate to="/" />} />
+
+          <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
         </Routes>
       </main>
     </div>
