@@ -39,12 +39,12 @@ const AddReview = ({ productId, onReviewAdded }) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
+      className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
     >
       <h3 className="text-xl font-bold text-gray-900 mb-4">Add Your Review</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+          <label className="block text-sm font-medium text-gray-800 mb-2">Rating</label>
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -58,13 +58,13 @@ const AddReview = ({ productId, onReviewAdded }) => {
                 />
               </button>
             ))}
-            <span className="ml-2 text-sm text-gray-600">{rating} Star{rating !== 1 ? 's' : ''}</span>
+            <span className="ml-2 text-sm text-gray-700">{rating} Star{rating !== 1 ? 's' : ''}</span>
           </div>
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Comment <span className="text-gray-500">(optional)</span>
+          <label className="block text-sm font-medium text-gray-800 mb-2">
+            Comment <span className="text-gray-600">(optional)</span>
           </label>
           <textarea
             value={comment}

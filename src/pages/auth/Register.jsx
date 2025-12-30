@@ -258,7 +258,7 @@ const Register = () => {
                     Account Type
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    {['USER', 'SELLER'].map(role => {
+                    {['USER', 'SELLER'].map((role) => {
                       const info = roleInfo[role];
                       const isSelected = formData.role === role;
                       return (

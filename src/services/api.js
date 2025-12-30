@@ -237,4 +237,6 @@ export const carbonService = {
   getPlatformSummary: () => api.get('/carbon/admin/summary')
 };
 
+
+
 export default api;

@@ -35,7 +35,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6"
+      className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6"
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
@@ -44,7 +44,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
           </div>
           <div>
             <h3 className="text-lg font-bold text-gray-900">Filter Cart Items</h3>
-            <p className="text-sm text-gray-600">Refine your cart selection</p>
+            <p className="text-sm text-gray-700">Refine your cart selection</p>
           </div>
         </div>
         <button 
@@ -63,7 +63,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
             Category
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
               <FiTag />
             </div>
             <select 
@@ -81,7 +81,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
               <option value="Fitness & Sports">Fitness & Sports</option>
               <option value="Toys & Games">Toys & Games</option>
             </select>
-            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-500">
               <FiChevronDown />
             </div>
           </div>
@@ -94,7 +94,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                 <FiDollarSign className="text-sm" />
               </div>
               <input
@@ -105,9 +105,9 @@ const CartFilters = ({ filters, onFilterChange }) => {
                 className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
               />
             </div>
-            <div className="flex items-center text-gray-400">−</div>
+            <div className="flex items-center text-gray-500">−</div>
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                 <FiDollarSign className="text-sm" />
               </div>
               <input
@@ -128,7 +128,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                 <FiPackage className="text-sm" />
               </div>
               <input
@@ -139,9 +139,9 @@ const CartFilters = ({ filters, onFilterChange }) => {
                 className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
               />
             </div>
-            <div className="flex items-center text-gray-400">−</div>
+            <div className="flex items-center text-gray-500">−</div>
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                 <FiPackage className="text-sm" />
               </div>
               <input
@@ -161,7 +161,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
             Sort By
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
               <FiPackage />
             </div>
             <select 
@@ -177,7 +177,7 @@ const CartFilters = ({ filters, onFilterChange }) => {
               <option value="name_asc">Name: A to Z</option>
               <option value="name_desc">Name: Z to A</option>
             </select>
-            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-500">
               <FiChevronDown />
             </div>
           </div>

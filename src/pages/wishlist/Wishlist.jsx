@@ -1,5 +1,4 @@
-// src/pages/wishlist/Wishlist.jsx - COMPLETE CORRECTED VERSION
-
+// src/pages/wishlist/Wishlist.jsx
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useWishlist } from '../../context/WishlistContext';

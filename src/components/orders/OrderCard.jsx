@@ -93,20 +93,20 @@ const OrderCard = ({ order, userRole, onStatusUpdate }) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition"
+      className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition"
     >
       {/* Order Header */}
       <div className="p-6 border-b border-gray-200 bg-gray-50">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-white border border-gray-200">
-              <FiPackage className="text-gray-600" />
+              <FiPackage className="text-gray-700" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Order #{order.id}</h3>
               <div className="flex items-center mt-1">
-                <FiCalendar className="text-gray-500 text-sm mr-1" />
-                <span className="text-xs text-gray-500">
+                <FiCalendar className="text-gray-600 text-sm mr-1" />
+                <span className="text-xs text-gray-600">
                   {new Date(order.createdAt).toLocaleDateString()}
                 </span>
               </div>
@@ -123,7 +123,7 @@ const OrderCard = ({ order, userRole, onStatusUpdate }) => {
                 <FiDollarSign className="text-emerald-600 mr-1" />
                 <span className="text-xl font-bold text-emerald-600">${order.totalAmount || 0}</span>
               </div>
-              <div className="flex items-center justify-end text-sm text-gray-600">
+              <div className="flex items-center justify-end text-sm text-gray-700">
                 <FiActivity className="mr-1" />
                 <span>{totalCarbon}kg CO₂</span>
               </div>
@@ -142,19 +142,19 @@ const OrderCard = ({ order, userRole, onStatusUpdate }) => {
             </h4>
             <div className="space-y-3">
               <div className="flex">
-                <span className="text-gray-500 w-24 text-sm">Address:</span>
+                <span className="text-gray-600 w-24 text-sm">Address:</span>
                 <span className="text-gray-900 text-sm">
                   {order.shippingAddress || order.address || 'N/A'}
                 </span>
               </div>
               <div className="flex">
-                <span className="text-gray-500 w-24 text-sm">Phone:</span>
+                <span className="text-gray-600 w-24 text-sm">Phone:</span>
                 <span className="text-gray-900 text-sm">
                   {order.phoneNumber || order.phone || 'N/A'}
                 </span>
               </div>
               <div className="flex">
-                <span className="text-gray-500 w-24 text-sm">Payment:</span>
+                <span className="text-gray-600 w-24 text-sm">Payment:</span>
                 <span className="text-gray-900 text-sm">
                   {order.paymentMethod || 'N/A'} ({order.paymentStatus || 'Pending'})
                 </span>
@@ -175,7 +175,7 @@ const OrderCard = ({ order, userRole, onStatusUpdate }) => {
                       <div className="font-medium text-gray-900">
                         {item.productNameSnapshot || item.productName || 'Product'}
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-700">
                         Qty: {item.quantity || 1}
                       </div>
                     </div>
@@ -183,14 +183,14 @@ const OrderCard = ({ order, userRole, onStatusUpdate }) => {
                       <div className="font-medium text-gray-900">
                         ${(item.priceSnapshot || item.price || 0).toFixed(2)}
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-700">
                         {(item.carbonFootprint || 0) * (item.quantity || 1)}kg CO₂
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-4 text-gray-500">
+                <div className="text-center py-4 text-gray-600">
                   <FiPackage className="mx-auto text-2xl mb-2" />
                   <p>No items in this order</p>
                 </div>
@@ -204,7 +204,7 @@ const OrderCard = ({ order, userRole, onStatusUpdate }) => {
           <div className="mt-6 pt-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex items-center">
-                <span className="text-sm font-medium text-gray-700 mr-3">Update Status:</span>
+                <span className="text-sm font-medium text-gray-800 mr-3">Update Status:</span>
                 <div className="relative">
                   <select 
                     value={order.status || 'PENDING'}
@@ -229,7 +229,7 @@ const OrderCard = ({ order, userRole, onStatusUpdate }) => {
               {updating && (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
-                  <span className="ml-2 text-sm text-gray-600">Updating...</span>
+                  <span className="ml-2 text-sm text-gray-700">Updating...</span>
                 </div>
               )}
             </div>

@@ -212,7 +212,7 @@ const AddProductForm = ({ onProductAdded, editingProduct, onUpdateProduct, showE
   }, 0);
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
       <div className="p-1 bg-gradient-to-r from-emerald-500 to-teal-500">
         <div className="bg-white p-6 md:p-8">
           <div className="flex items-center mb-6">
@@ -223,7 +223,7 @@ const AddProductForm = ({ onProductAdded, editingProduct, onUpdateProduct, showE
               <h2 className="text-2xl font-bold text-gray-900">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 {editingProduct 
                   ? 'Update your product details' 
                   : 'Fill in the details to list your eco-friendly product'}
@@ -368,9 +368,9 @@ const AddProductForm = ({ onProductAdded, editingProduct, onUpdateProduct, showE
                   </div>
                 ) : (
                   <div className="text-center">
-                    <FiUpload className="mx-auto text-gray-400 text-3xl mb-3" />
-                    <p className="text-gray-600 mb-1">Upload a product image</p>
-                    <p className="text-sm text-gray-500">PNG, JPG up to 2MB</p>
+                    <FiUpload className="mx-auto text-gray-500 text-3xl mb-3" />
+                    <p className="text-gray-700 mb-1">Upload a product image</p>
+                    <p className="text-sm text-gray-600">PNG, JPG up to 2MB</p>
                   </div>
                 )}
                 
@@ -381,7 +381,7 @@ const AddProductForm = ({ onProductAdded, editingProduct, onUpdateProduct, showE
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <span className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition inline-flex items-center">
+                  <span className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition inline-flex items-center">
                     <FiUpload className="mr-2" /> {imagePreview ? 'Change Image' : 'Upload Image'}
                   </span>
                 </label>
@@ -422,7 +422,7 @@ const AddProductForm = ({ onProductAdded, editingProduct, onUpdateProduct, showE
                 ))}
               </div>
               
-              <div className="mt-4 text-sm text-gray-600">
+              <div className="mt-4 text-sm text-gray-700">
                 <p>Provide estimated carbon footprint for each lifecycle stage of your product.</p>
               </div>
             </div>

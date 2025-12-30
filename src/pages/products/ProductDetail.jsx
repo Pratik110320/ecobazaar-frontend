@@ -1,3 +1,4 @@
+
 // src/pages/products/ProductDetail.jsx - COMPLETE CORRECTED VERSION
 
 import React, { useState, useEffect } from 'react';

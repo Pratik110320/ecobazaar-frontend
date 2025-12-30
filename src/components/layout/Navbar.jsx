@@ -61,12 +61,12 @@ const Navbar = () => {
     <>
       {user.role === 'USER' && (
         <>
-          <NavLink to="/" icon={<FiHome />}>Dashboard</NavLink>
+          <NavLink to="/dashboard" icon={<FiHome />}>Dashboard</NavLink>
           <NavLink to="/products" icon={<FiShoppingBag />}>Products</NavLink>
           <NavLink to="/cart" icon={<FiShoppingCart />} badge={getCartItemCount() > 0 ? getCartItemCount() : null}>
             Cart
           </NavLink>
-          <NavLink to="/wishlist" icon={<FiHeart />}>Wishlist</NavLink> {/* Add this line */}
+          <NavLink to="/wishlist" icon={<FiHeart />}>Wishlist</NavLink>
         </>
       )}
       <NavLink to="/orders" icon={<FiPackage />}>Orders</NavLink>
@@ -84,7 +84,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-3 group">
             <div className="relative">
               <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 p-2 rounded-lg shadow-md">
                 <FiShoppingBag className="w-6 h-6 text-white" />

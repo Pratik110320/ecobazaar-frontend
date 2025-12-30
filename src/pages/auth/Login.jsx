@@ -1,4 +1,4 @@
-// src/pages/auth/Login.jsx - Modern Professional Redesign
+// src/pages/auth/Login.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';

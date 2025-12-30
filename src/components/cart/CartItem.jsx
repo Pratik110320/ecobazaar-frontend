@@ -37,7 +37,7 @@ const CartItem = ({ item, onRemove }) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition"
+      className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition"
     >
       <div className="p-5">
         <div className="flex flex-col sm:flex-row gap-5">
@@ -97,17 +97,17 @@ const CartItem = ({ item, onRemove }) => {
             {/* Details Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                <div className="text-xs font-medium text-gray-600 mb-1">Price</div>
+                <div className="text-xs font-medium text-gray-700 mb-1">Price</div>
                 <div className="text-lg font-bold text-emerald-600">${item.price}</div>
               </div>
               
               <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                <div className="text-xs font-medium text-gray-600 mb-1">Quantity</div>
+                <div className="text-xs font-medium text-gray-700 mb-1">Quantity</div>
                 <div className="text-lg font-bold text-gray-900">{item.quantity}</div>
               </div>
               
               <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                <div className="text-xs font-medium text-gray-600 mb-1">Carbon</div>
+                <div className="text-xs font-medium text-gray-700 mb-1">Carbon</div>
                 <div className="text-lg font-bold text-gray-900 flex items-center gap-1">
                   <FiPackage className="text-sm" />
                   {item.carbonFootprint}kg
@@ -115,7 +115,7 @@ const CartItem = ({ item, onRemove }) => {
               </div>
               
               <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                <div className="text-xs font-medium text-gray-600 mb-1">Subtotal</div>
+                <div className="text-xs font-medium text-gray-700 mb-1">Subtotal</div>
                 <div className="text-lg font-bold text-emerald-600">
                   ${(item.price * item.quantity).toFixed(2)}
                 </div>

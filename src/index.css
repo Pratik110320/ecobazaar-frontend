@@ -10,9 +10,10 @@
     @apply bg-gradient-to-br from-gray-50 to-emerald-50;
     @apply text-gray-900;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-bold;
+    @apply font-bold;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 

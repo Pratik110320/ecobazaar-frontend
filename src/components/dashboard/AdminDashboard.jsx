@@ -143,7 +143,7 @@ const MetricIndicator = ({ label, current, previous, icon, unit = "" }) => {
         </div>
         <div>
           <p className="font-medium text-gray-900">{label}</p>
-          <p className="text-sm text-gray-600">{unit}</p>
+          <p className="text-sm text-gray-700">{unit}</p>
         </div>
       </div>
       <div className="text-right">
@@ -165,7 +165,7 @@ const AdminDashboard = ({ data, onRefresh }) => {
       <div className="flex items-center justify-center min-h-[24rem]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading admin dashboard...</p>
+          <p className="text-gray-700">Loading admin dashboard...</p>
         </div>
       </div>
     );
@@ -299,7 +299,7 @@ const AdminDashboard = ({ data, onRefresh }) => {
         >
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-            <p className="text-gray-600 mt-1">Welcome back, Administrator</p>
+            <p className="text-gray-700 mt-1">Welcome back, Administrator</p>
           </div>
           {/* <motion.button
             whileHover={{ scale: 1.05 }}
@@ -381,7 +381,7 @@ const AdminDashboard = ({ data, onRefresh }) => {
                 )}
               </div>
               <p className="font-semibold text-gray-900 mt-4">{action.label}</p>
-              <p className="text-sm text-gray-500 mt-1">View details →</p>
+              <p className="text-sm text-gray-600 mt-1">View details →</p>
             </motion.a>
           ))}
         </motion.section> */}
@@ -560,7 +560,7 @@ const AdminDashboard = ({ data, onRefresh }) => {
                         <p className="font-semibold text-gray-900">
                           {p.productName}
                         </p>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-gray-700 mt-1">
                           Seller: {p.sellerName} • {p.carbonFootprint}kg CO₂
                         </p>
                       </div>
@@ -579,7 +579,7 @@ const AdminDashboard = ({ data, onRefresh }) => {
                     </motion.div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-gray-600">
                     <FiCheckCircle className="mx-auto text-3xl mb-3 text-emerald-400" />
                     <p className="font-medium">All clear!</p>
                     <p className="text-sm">No pending verifications</p>
@@ -621,10 +621,10 @@ const AdminDashboard = ({ data, onRefresh }) => {
                       <div className="ml-4 flex-1">
                         <p className="text-sm text-gray-900">{a.action}</p>
                         <div className="flex items-center justify-between mt-1">
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-600">
                             {a.actorName}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-600">
                             {new Date(a.timestamp).toLocaleTimeString([], {
                               hour: '2-digit',
                               minute: '2-digit'
@@ -632,12 +632,12 @@ const AdminDashboard = ({ data, onRefresh }) => {
                           </span>
                         </div>
                       </div>
-                      <FiChevronRight className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+                      <FiChevronRight className="text-gray-500 group-hover:text-gray-700 transition-colors" />
                     </motion.div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <FiActivity className="mx-auto text-3xl mb-3 text-gray-400" />
+                  <div className="text-center py-8 text-gray-600">
+                    <FiActivity className="mx-auto text-3xl mb-3 text-gray-500" />
                     <p className="font-medium">No recent activities</p>
                   </div>
                 )}
@@ -659,14 +659,14 @@ const AdminDashboard = ({ data, onRefresh }) => {
                 <FiTarget className="text-2xl text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Carbon Footprint</p>
+                <p className="text-sm text-gray-700 mb-1">Carbon Footprint</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {carbonImpact?.totalCarbonFootprint?.toLocaleString() ?? 0}kg
                 </p>
               </div>
             </div>
             <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
+              <div className="flex justify-between text-sm text-gray-700 mb-1">
                 <span>Monthly target</span>
                 <span className="font-medium text-emerald-600">-12%</span>
               </div>
@@ -682,14 +682,14 @@ const AdminDashboard = ({ data, onRefresh }) => {
                 <FiCheckCircle className="text-2xl text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Carbon Saved</p>
+                <p className="text-sm text-gray-700 mb-1">Carbon Saved</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {carbonImpact?.totalCarbonSaved?.toLocaleString() ?? 0}kg
                 </p>
               </div>
             </div>
             <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
+              <div className="flex justify-between text-sm text-gray-700 mb-1">
                 <span>Vs last month</span>
                 <span className="font-medium text-emerald-600">+18%</span>
               </div>
@@ -705,14 +705,14 @@ const AdminDashboard = ({ data, onRefresh }) => {
                 <FiTrendingUp className="text-2xl text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Avg per Order</p>
+                <p className="text-sm text-gray-700 mb-1">Avg per Order</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {carbonImpact?.averageCarbonPerOrder ?? 0}kg
                 </p>
               </div>
             </div>
             <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
+              <div className="flex justify-between text-sm text-gray-700 mb-1">
                 <span>Improvement</span>
                 <span className="font-medium text-emerald-600">+8.2%</span>
               </div>

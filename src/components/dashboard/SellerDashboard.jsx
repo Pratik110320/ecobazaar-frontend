@@ -18,7 +18,7 @@ const SellerDashboard = ({ data }) => {
     <div className="flex items-center justify-center min-h-96">
       <div className="text-center">
         <div className="animate-spin rounded-full h-14 w-14 border-[3px] border-emerald-500 border-t-transparent mx-auto mb-4"></div>
-        <p className="text-gray-600 font-medium">Loading seller dashboard...</p>
+        <p className="text-gray-700 font-medium">Loading seller dashboard...</p>
       </div>
     </div>
   );
@@ -154,22 +154,22 @@ const SellerDashboard = ({ data }) => {
     >
       {/* Performance Chart */}
       <motion.div variants={itemVariants}>
-        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 p-6 shadow-lg">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
             <div>
               <h3 className="text-xl font-bold text-gray-900 flex items-center">
                 <FiTrendingUp className="mr-3 text-emerald-500" /> Performance Overview
               </h3>
-              <p className="text-gray-500 mt-1">Monthly sales and revenue trends</p>
+              <p className="text-gray-600 mt-1">Monthly sales and revenue trends</p>
             </div>
             <div className="flex items-center space-x-4 mt-4 sm:mt-0">
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-emerald-500 mr-2"></div>
-                <span className="text-sm text-gray-600">Revenue</span>
+                <span className="text-sm text-gray-700">Revenue</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-                <span className="text-sm text-gray-600">Sales</span>
+                <span className="text-sm text-gray-700">Sales</span>
               </div>
             </div>
           </div>
@@ -222,7 +222,7 @@ const SellerDashboard = ({ data }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Products */}
         <motion.div variants={itemVariants}>
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm h-full">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-lg h-full">
             <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
               <FiAward className="mr-3 text-amber-500" /> Top Products
             </h3>
@@ -275,7 +275,7 @@ const SellerDashboard = ({ data }) => {
 
         {/* Sales by Category */}
         <motion.div variants={itemVariants}>
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm h-full">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-lg h-full">
             <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
               <FiPieChart className="mr-3 text-purple-500" /> Sales by Category
             </h3>
@@ -314,7 +314,7 @@ const SellerDashboard = ({ data }) => {
                       className="w-3 h-3 rounded-full mr-3"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     ></div>
-                    <span className="text-sm text-gray-700">{category.name}</span>
+                    <span className="text-sm text-gray-800">{category.name}</span>
                     <span className="ml-auto text-sm font-semibold text-gray-900">
                       ${category.value}
                     </span>
@@ -372,7 +372,7 @@ const SellerDashboard = ({ data }) => {
                 }`}>
                   {metric.value}
                 </div>
-                <div className="text-sm text-gray-600">{metric.label}</div>
+                <div className="text-sm text-gray-700">{metric.label}</div>
               </motion.div>
             ))}
           </div>
@@ -381,7 +381,7 @@ const SellerDashboard = ({ data }) => {
 
       {/* Recent Orders */}
       <motion.div variants={itemVariants}>
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-lg">
           <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
             <FiTruck className="mr-3 text-blue-500" /> Recent Orders
           </h3>
@@ -389,11 +389,11 @@ const SellerDashboard = ({ data }) => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Order ID</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Items</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Amount</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Order ID</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Items</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -408,12 +408,12 @@ const SellerDashboard = ({ data }) => {
                     <td className="py-4 px-4">
                       <span className="font-medium text-gray-900">#{order.orderId}</span>
                     </td>
-                    <td className="py-4 px-4 text-gray-600">
+                    <td className="py-4 px-4 text-gray-700">
                       {new Date(order.date).toLocaleDateString()}
                     </td>
                     <td className="py-4 px-4">
                       <span className="text-gray-900 font-medium">{order.itemCount}</span>
-                      <span className="text-gray-500 text-sm ml-1">items</span>
+                      <span className="text-gray-600 text-sm ml-1">items</span>
                     </td>
                     <td className="py-4 px-4">
                       <span className="font-bold text-emerald-700">${order.totalAmount}</span>
@@ -437,8 +437,8 @@ const SellerDashboard = ({ data }) => {
             </table>
             {(!recentOrders || recentOrders.length === 0) && (
               <div className="text-center py-12">
-                <FiTruck className="mx-auto text-3xl text-gray-300 mb-3" />
-                <p className="text-gray-500">No recent orders found</p>
+                <FiTruck className="mx-auto text-3xl text-gray-400 mb-3" />
+                <p className="text-gray-600">No recent orders found</p>
               </div>
             )}
           </div>

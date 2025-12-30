@@ -1,6 +1,7 @@
+// src/components/ui/Alert.jsx
+import React from 'react';
 
-// src/components/ui/Alert.jsx - New Component
-export const Alert = ({ 
+const Alert = ({ 
   children, 
   variant = 'info',
   icon,
@@ -55,5 +56,4 @@ export const Alert = ({
   );
 };
 
-// Export all components
-export { Button as default, Card, LoadingSpinner, Badge, Alert };
+export default Alert;
